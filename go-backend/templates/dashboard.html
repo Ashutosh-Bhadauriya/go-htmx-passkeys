@@ -1,0 +1,64 @@
+{{ template "base.html" }}
+
+<body>
+  <h1>Dashboard</h1>
+  <!-- <button hx-post="/passkey/register" hx-trigger="click">
+    Register Passkey
+  </button> -->
+  <button
+    id="registerButton"
+    hx-post="/passkey/start-registration"
+    hx-trigger="click"
+    hx-target="#result"
+  >
+    Register Passkey
+  </button>
+  <button hx-post="/logout" hx-trigger="click" hx-target="#result">
+    Logout
+  </button>
+  <p id="result"></p>
+</body>
+
+<script>
+  document
+    .getElementById("result")
+    .addEventListener("htmx:afterSwap", function (e) {
+      if (document.getElementById("result").innerHTML === "Logged out!") {
+        window.location.href = "/login";
+      }
+    });
+
+  document
+    .getElementById("registerButton")
+    .addEventListener("htmx:afterOnLoad", async function (event) {
+      const createOptions = JSON.parse(event.detail.xhr.response);
+      console.log(createOptions);
+
+      try {
+        const credential = await webauthnJSON.create(createOptions);
+        // console.log(credential);
+
+        htmx.ajax(
+          "POST",
+          "/passkey/finalize-registration",
+          {
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(credential),
+            withCredentials: true,
+            responseType: "json",
+          },
+          {
+            onLoad: function (xhr) {
+              if (xhr.status === 200) {
+                console.log("Registered passkey successfully!");
+              } else {
+                console.error("Registration failed!");
+              }
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Error during registration:", error);
+      }
+    });
+</script>

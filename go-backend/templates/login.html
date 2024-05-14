@@ -1,0 +1,27 @@
+{{ template "base.html" }}
+
+<body>
+  <h1>Login</h1>
+  <form>
+    <input type="text" name="email" placeholder="email" />
+    <input type="password" name="password" placeholder="Password" />
+    <button hx-post="/login-user" hx-trigger="click" hx-target="#result">
+      Login
+    </button>
+  </form>
+
+  <button hx-post="/passkey/start-login" hx-trigger="click" hx-target="#result">
+    Sign in with Passkey
+  </button>
+  <p id="result"></p>
+</body>
+
+<script>
+  document
+    .getElementById("result")
+    .addEventListener("htmx:afterSwap", function (e) {
+      if (document.getElementById("result").innerHTML === "Logged in!") {
+        window.location.href = "/dashboard";
+      }
+    });
+</script>

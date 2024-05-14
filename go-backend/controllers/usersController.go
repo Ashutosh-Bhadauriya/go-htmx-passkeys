@@ -16,8 +16,8 @@ import (
 
 func Login(c *gin.Context) {
 	var body struct {
-		Email    string
-		Password string
+		Email    string `form:"email"`
+		Password string `form:"password"`
 	}
 
 	if err := c.Bind(&body); err != nil {
@@ -70,13 +70,15 @@ func Login(c *gin.Context) {
 
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("token", tokenString, 3600*24*30, "/", "localhost", false, true)
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+	// c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+	c.String(200, "Logged in!")
 }
 
 func Logout(c *gin.Context) {
 	c.SetCookie("token", "", -1, "/", "localhost", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
+	// c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
+	c.String(200, "Logged out!")
 }
 
 func Validate(c *gin.Context) {
@@ -104,8 +106,6 @@ func StartRegistration(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User must be logged in to register a passkey"})
 		return
 	}
-
-	fmt.Printf("Type of userInterface: %T\n", userInterface)
 
 	user, ok := userInterface.(*models.User)
 	if !ok {
@@ -137,7 +137,7 @@ func StartRegistration(c *gin.Context) {
 	body, _ := io.ReadAll(resp.Body)
 	var creationOptions map[string]interface{}
 	json.Unmarshal(body, &creationOptions)
-
+	fmt.Println("passkey initialization finished", creationOptions)
 	c.JSON(http.StatusOK, creationOptions)
 }
 
@@ -263,4 +263,16 @@ func FinalizeLogin(c *gin.Context) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("token", tokenString, 3600*24*30, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+}
+
+func HomePage(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.html", gin.H{})
+}
+
+func LoginPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "login.html", gin.H{})
+}
+
+func DashboardPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "dashboard.html", gin.H{})
 }
