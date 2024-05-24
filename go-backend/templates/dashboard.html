@@ -2,9 +2,6 @@
 
 <body>
   <h1>Dashboard</h1>
-  <!-- <button hx-post="/passkey/register" hx-trigger="click">
-    Register Passkey
-  </button> -->
   <button
     id="registerButton"
     hx-post="/passkey/start-registration"
@@ -42,10 +39,10 @@
           "POST",
           "/passkey/finalize-registration",
           {
-            headers: { "Content-Type": "application/json" },
+            // headers: { "Content-Type": "application/json" },
             body: JSON.stringify(credential),
-            withCredentials: true,
-            responseType: "json",
+            // withCredentials: true,
+            // responseType: "json",
           },
           {
             onLoad: function (xhr) {
